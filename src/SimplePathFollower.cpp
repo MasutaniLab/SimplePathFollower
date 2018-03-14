@@ -196,6 +196,7 @@ RTC::ReturnCode_t SimplePathFollower::onExecute(RTC::UniqueId ec_id)
 
 		if (m_poseUpdated) {
 			m_pathFollowerObj.setGain(m_maxVelocity, m_minVelocity,
+                                m_maxRotationVelocity, m_minRotationVelocity,
 				m_distanceToTranslationGain, m_directionToTranslationGain,
 				m_distanceToRotationGain, m_directionToRotationGain,
 				m_approachDistanceGain, m_approachDirectionGain);
