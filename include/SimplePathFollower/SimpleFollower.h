@@ -41,11 +41,15 @@ class SimpleFollower {
  public:
   SimpleFollower(float maxTranslationVelocity=0.5, float minTranslationVelocity=0.2, 
 	  float maxRotationVelocity=0.5, float minRotationVelocity=0.2,
-	  float distanceToTranslationGain=2.0, float directionToTranslationGain=2.0, float distanceToRotationGain=2.5, float directionToRotationGain=2.5, float approachDistanceGain=0.5, float approachDirectionGain=0.5);
+	  float distanceToTranslationGain=2.0, float directionToTranslationGain=2.0, 
+          float distanceToRotationGain=2.5, float directionToRotationGain=2.5, 
+          float approachDistanceGain=0.5, float approachDirectionGain=0.5);
 
   void setGain(float maxTranslationVelocity=0.5, float minTranslationVelocity=0.2,
 	  float maxRotationVelocity=0.5, float minRotationVelocity=0.2,
-	  float distanceToTranslationGain=2.0, float directionToTranslationGain=2.0, float distanceToRotationGain=2.5, float directionToRotationGain=2.5, float approachDistanceGain=0.5, float approachDirectionGain=0.5);
+	  float distanceToTranslationGain=2.0, float directionToTranslationGain=2.0, 
+          float distanceToRotationGain=2.5, float directionToRotationGain=2.5, 
+          float approachDistanceGain=0.5, float approachDirectionGain=0.5);
 
   ~SimpleFollower();
   

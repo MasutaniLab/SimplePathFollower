@@ -14,7 +14,7 @@
 using namespace RTC;
 
 #define DEBUG
-
+#define DEBUG_GOAL
 
 #ifdef DEBUG
 #include <iostream>
@@ -63,6 +63,16 @@ static std::ofstream fout;
 
 void SimpleFollower::startFollow(Path2D& path)
 { 
+#if 0
+  size_t n = path.waypoints.length();
+  for (size_t i = 0; i < n; i++) {
+    std::cout << i << ": ";
+    std::cout << path.waypoints[i].target.position.x << ",";
+    std::cout << path.waypoints[i].target.position.y << ",";
+    std::cout << path.waypoints[i].target.heading << ",";
+    std::cout << path.waypoints[i].distanceTolerance << std::endl;
+  }
+#endif
 	m_goal = false;
 	m_approaching = false;
 	m_targetPath = path;
