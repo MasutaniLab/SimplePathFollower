@@ -8,11 +8,11 @@
 
 #   rtc-template -bcxx --module-name=SimplePathFollower 
 #   --module-desc='Simple Algorithm Path Follower' --module-version=1.0.0 --module-vendor=Sugar Sweet Robotics 
-#   --module-category=Experimenta --module-comp-type=STATIC 
+#   --module-category=Navigation --module-comp-type=STATIC 
 #   --module-act-type=PERIODIC --module-max-inst=1 
-#   --config=debug:int:0 --config=directionGain:float:1.0 --config=distanceGain:float:1.0 
-#   --inport=path:RTC::Path2D --inport=currentPose:RTC::TimedPose2D --outport=velocity:RTC::TimedVelocity2D 
-#   --service-idl=C:\Users\ysuga\rtm\idl\MobileRobot.idl 
+#   --config=debug:int:0 --config=poseTimeout:float:3.0 --config=approachDirectionGain:float:1.0 --config=directionToTranslationGain:float:0.0 --config=directionToRotationGain:float:0.0 --config=minVelocity:float:0.2 --config=distanceToTranslationGain:float:0.0 --config=approachDistanceGain:float:0.5 --config=maxVelocity:float:0.8 --config=distanceToRotationGain:float:2.0 --config=maxRotationVelocity:float:2.0 --config=minRotationVelocity:float:0.5 
+#   --inport=currentPose:RTC::TimedPose2D --outport=velocity:RTC::TimedVelocity2D 
+#   --service-idl=C:\A\SimplePathFollower\idl\MobileRobot.idl 
 #   --service=PathFollower:PathFollower:RTC::PathFollower 
 
 
@@ -24,7 +24,7 @@ Module Name: SimplePathFollower
 Description: Simple Algorithm Path Follower
 Version:     1.0.0
 Vendor:      Sugar Sweet Robotics
-Category:    Experimenta
+Category:    Navigation
 Kind:        DataFlowComponent
 Comp. Type:  STATIC
 Act. Type:   PERIODIC
@@ -68,26 +68,8 @@ Lang Type:
 ======================================================================
 # <rtc-template block="inport">
 
-	Name:        path
-	PortNumber:  0
-	Description: 
-	PortType: 
-	DataType:    RTC::Path2D
-	MaxOut: 
-	[Data Elements]
-		Name:
-		Type:            
-		Number:          
-		Semantics:       
-		Unit:            
-		Frequency:       
-		Operation Cycle: 
-		RangeLow:
-		RangeHigh:
-		DefaultValue:
-
 	Name:        currentPose
-	PortNumber:  1
+	PortNumber:  0
 	Description: 
 	PortType: 
 	DataType:    RTC::TimedPose2D
@@ -165,7 +147,15 @@ Lang Type:
 		Range:           
 		Constraint:      
 
-		Name:             directionGain
+		Name:             poseTimeout
+		Description:     
+		Type:            float
+		DefaultValue:     3.0
+		Unit:            
+		Range:           
+		Constraint:      
+
+		Name:             approachDirectionGain
 		Description:     
 		Type:            float
 		DefaultValue:     1.0
@@ -173,10 +163,74 @@ Lang Type:
 		Range:           
 		Constraint:      
 
-		Name:             distanceGain
+		Name:             directionToTranslationGain
 		Description:     
 		Type:            float
-		DefaultValue:     1.0
+		DefaultValue:     0.0
+		Unit:            
+		Range:           
+		Constraint:      
+
+		Name:             directionToRotationGain
+		Description:     
+		Type:            float
+		DefaultValue:     0.0
+		Unit:            
+		Range:           
+		Constraint:      
+
+		Name:             minVelocity
+		Description:     
+		Type:            float
+		DefaultValue:     0.2
+		Unit:            
+		Range:           
+		Constraint:      
+
+		Name:             distanceToTranslationGain
+		Description:     
+		Type:            float
+		DefaultValue:     0.0
+		Unit:            
+		Range:           
+		Constraint:      
+
+		Name:             approachDistanceGain
+		Description:     
+		Type:            float
+		DefaultValue:     0.5
+		Unit:            
+		Range:           
+		Constraint:      
+
+		Name:             maxVelocity
+		Description:     
+		Type:            float
+		DefaultValue:     0.8
+		Unit:            
+		Range:           
+		Constraint:      
+
+		Name:             distanceToRotationGain
+		Description:     
+		Type:            float
+		DefaultValue:     2.0
+		Unit:            
+		Range:           
+		Constraint:      
+
+		Name:             maxRotationVelocity
+		Description:     
+		Type:            float
+		DefaultValue:     2.0
+		Unit:            
+		Range:           
+		Constraint:      
+
+		Name:             minRotationVelocity
+		Description:     
+		Type:            float
+		DefaultValue:     0.5
 		Unit:            
 		Range:           
 		Constraint:      

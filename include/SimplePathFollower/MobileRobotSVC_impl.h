@@ -16,11 +16,12 @@
  
 
 class SimplePathFollower;
+
 /*!
  * @class PathFollowerSVC_impl
  * Example class implementing IDL interface RTC::PathFollower
  */
-class PathFollowerSVC_impl
+class RTC_PathFollowerSVC_impl
  : public virtual POA_RTC::PathFollower,
    public virtual PortableServer::RefCountServantBase
 {
@@ -34,18 +35,16 @@ class PathFollowerSVC_impl
   /*!
    * @brief standard constructor
    */
-   PathFollowerSVC_impl();
+   RTC_PathFollowerSVC_impl();
   /*!
    * @brief destructor
    */
-   virtual ~PathFollowerSVC_impl();
+   virtual ~RTC_PathFollowerSVC_impl();
 
    // attributes and operations
    RTC::RETURN_VALUE followPath(const RTC::Path2D& path);
-
-   RTC::RETURN_VALUE getState(::RTC::FOLLOWER_STATE& state);
-
-   RTC::RETURN_VALUE followPathNonBlock(const ::RTC::Path2D& path);
+   RTC::RETURN_VALUE getState(RTC::FOLLOWER_STATE& state);
+   RTC::RETURN_VALUE followPathNonBlock(const RTC::Path2D& path);
 
    void setRTC(SimplePathFollower* pRTC) {
 	 m_pRTC = pRTC;

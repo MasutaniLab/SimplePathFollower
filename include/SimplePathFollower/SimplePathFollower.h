@@ -18,18 +18,22 @@
 // <rtc-template block="service_impl_h">
 #include "MobileRobotSVC_impl.h"
 
-
-#include <rtm/Manager.h>
-#include <rtm/DataFlowComponentBase.h>
-#include <rtm/CorbaPort.h>
-#include <rtm/DataInPort.h>
-#include <rtm/DataOutPort.h>
 // </rtc-template>
 
 // Service Consumer stub headers
 // <rtc-template block="consumer_stub_h">
 
 // </rtc-template>
+
+// Service Consumer stub headers
+// <rtc-template block="port_stub_h">
+// </rtc-template>
+
+#include <rtm/Manager.h>
+#include <rtm/DataFlowComponentBase.h>
+#include <rtm/CorbaPort.h>
+#include <rtm/DataInPort.h>
+#include <rtm/DataOutPort.h>
 
 using namespace RTC;
 
@@ -244,67 +248,75 @@ class SimplePathFollower
   int m_debug;
   /*!
    * 
-   * - Name:  directionGain
-   * - DefaultValue: 1.0
+   * - Name:  poseTimeout
+   * - DefaultValue: 3.0
    */
-  float m_distanceToTranslationGain;
+  float m_poseTimeout;
   /*!
    * 
-   * - Name:  distanceGain
-   * - DefaultValue: 1.0
-   */
-  float m_distanceToRotationGain;
-
-  /*!
-   * 
-   * - Name:  directionGain
-   * - DefaultValue: 1.0
-   */
-  float m_directionToTranslationGain;
-  /*!
-   * 
-   * - Name:  distanceGain
-   * - DefaultValue: 1.0
-   */
-  float m_directionToRotationGain;
-  /*!
-   * 
-   * - Name:  directionGain
-   * - DefaultValue: 1.0
-   */
-  float m_approachDistanceGain;
-  /*!
-   * 
-   * - Name:  distanceGain
+   * - Name:  approachDirectionGain
    * - DefaultValue: 1.0
    */
   float m_approachDirectionGain;
   /*!
    * 
-   * - Name:  directionGain
-   * - DefaultValue: 1.0
+   * - Name:  directionToTranslationGain
+   * - DefaultValue: 0.0
+   */
+  float m_directionToTranslationGain;
+  /*!
+   * 
+   * - Name:  directionToRotationGain
+   * - DefaultValue: 0.0
+   */
+  float m_directionToRotationGain;
+  /*!
+   * 
+   * - Name:  minVelocity
+   * - DefaultValue: 0.2
+   */
+  float m_minVelocity;
+  /*!
+   * 
+   * - Name:  distanceToTranslationGain
+   * - DefaultValue: 0.0
+   */
+  float m_distanceToTranslationGain;
+  /*!
+   * 
+   * - Name:  approachDistanceGain
+   * - DefaultValue: 0.5
+   */
+  float m_approachDistanceGain;
+  /*!
+   * 
+   * - Name:  maxVelocity
+   * - DefaultValue: 0.8
    */
   float m_maxVelocity;
   /*!
    * 
-   * - Name:  distanceGain
-   * - DefaultValue: 1.0
+   * - Name:  distanceToRotationGain
+   * - DefaultValue: 2.0
    */
-  float m_minVelocity;
+  float m_distanceToRotationGain;
   /*!
-   *
-   *
+   * 
+   * - Name:  maxRotationVelocity
+   * - DefaultValue: 2.0
    */
-  float m_poseTimeout;
+  float m_maxRotationVelocity;
+  /*!
+   * 
+   * - Name:  minRotationVelocity
+   * - DefaultValue: 0.5
+   */
+  float m_minRotationVelocity;
 
   // </rtc-template>
 
   // DataInPort declaration
   // <rtc-template block="inport_declare">
-  RTC::Path2D m_path;
-  /*!
-   */
-  InPort<RTC::Path2D> m_pathIn;
   RTC::TimedPose2D m_currentPose;
   /*!
    */
@@ -341,7 +353,7 @@ class SimplePathFollower
   // <rtc-template block="service_declare">
   /*!
    */
-  PathFollowerSVC_impl m_pathFollower;
+  RTC_PathFollowerSVC_impl m_pathFollower;
   
   // </rtc-template>
 
@@ -361,6 +373,7 @@ class SimplePathFollower
 
   bool m_poseUpdated;
   SimpleFollower m_pathFollowerObj;
+  RTC::Path2D m_path;
 
 public:
 
