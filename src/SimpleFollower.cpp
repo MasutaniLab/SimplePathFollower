@@ -346,11 +346,13 @@ FOLLOW_RESULT SimpleFollower::approachGoal(RTC::Pose2D& currentPose, RTC::Waypoi
 			//m_Settled = true;
 
 			rotVelocity = m_approachDirectionGain * (deltaPose/(M_PI/2));
-			/*
-			if(rotVelocity >= m_MaxRotationSpeed) {
-			rotVelocity = m_MaxRotationSpeed;
-			}
-			*/
+
+			if(rotVelocity > m_MaxRotationVelocity) {
+			  rotVelocity = m_MaxRotationVelocity;
+                        } else if (rotVelocity < -m_MaxRotationVelocity) {
+                          rotVelocity = -m_MaxRotationVelocity;
+                        }
+
 			ret = FOLLOW_TURNTOGOALPOSE;
 		}
 
@@ -361,11 +363,11 @@ FOLLOW_RESULT SimpleFollower::approachGoal(RTC::Pose2D& currentPose, RTC::Waypoi
 		while(dtheta <= -M_PI) dtheta += 2*M_PI;
 
 		transVelocity = m_approachDistanceGain * distance;
-		/*
-		if(transVelocity >= m_MaxTranslationSpeed) {
-		transVelocity = m_MaxTranslationSpeed;
+		
+		if(transVelocity > m_MaxTranslationVelocity) {
+		  transVelocity = m_MaxTranslationVelocity;
 		}
-		*/
+		
 		//if(dtheta > PI/6 || dtheta < -PI/6) transVelocity = 0;
 
 		if (dtheta < -goal.headingTolerance) {
@@ -376,13 +378,13 @@ FOLLOW_RESULT SimpleFollower::approachGoal(RTC::Pose2D& currentPose, RTC::Waypoi
 
 
 		rotVelocity = m_approachDirectionGain * (dtheta/(M_PI/2));
-		/*
-		if(rotVelocity >= m_MaxRotationSpeed) {
-		rotVelocity = m_MaxRotationSpeed;
-		} else if(rotVelocity <= -m_MaxRotationSpeed) {
-		rotVelocity = -m_MaxRotationSpeed;
+		
+		if(rotVelocity > m_MaxRotationVelocity) {
+		  rotVelocity = m_MaxRotationVelocity;
+		} else if(rotVelocity <= -m_MaxRotationVelocity) {
+		  rotVelocity = -m_MaxRotationVelocity;
 		}
-		*/
+		
 		/*
 		double ratio = (m_MaxRotationSpeed - fabs(rotVelocity)) / m_MaxRotationSpeed;
 		transVelocity = ratio * transVelocity;
