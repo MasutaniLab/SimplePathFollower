@@ -63,10 +63,24 @@ RTC::RETURN_VALUE RTC_PathFollowerSVC_impl::followPath(const RTC::Path2D& path)
 
 RTC::RETURN_VALUE RTC_PathFollowerSVC_impl::getState(RTC::FOLLOWER_STATE& state)
 {
-	RTC::RETURN_VALUE result = RETVAL_OK;
+  RTC::RETURN_VALUE result = RETVAL_OK;
 
+  SIMPLE_PATH_FOLLOWER_MODE mode = m_pRTC->getMode();
+  if (mode == MODE_NORMAL) {
+    state = FOLLOWER_FOLLOWING;
+    result = RETVAL_OK;
+  } else if (mode == MODE_TIMEOUT) {
+    state = RTC::FOLLOWER_ERROR;
+    result = RTC::RETVAL_ODOMETRY_TIME_OUT;
+  } else if (mode == MODE_OUTOFRANGE) {
+    state = RTC::FOLLOWER_ERROR;
+    result = RTC::RETVAL_OUTOF_RANGE;
+  } else if (mode == MODE_GOALED) {
+    state = RTC::FOLLOWER_STOPPED;
+    result = RETVAL_OK;
+  }
 
-	return result;
+  return result;
 }
 
 RTC::RETURN_VALUE RTC_PathFollowerSVC_impl::followPathNonBlock(const RTC::Path2D& path)
