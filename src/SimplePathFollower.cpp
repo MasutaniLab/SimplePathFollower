@@ -219,13 +219,12 @@ RTC::ReturnCode_t SimplePathFollower::onExecute(RTC::UniqueId ec_id)
 			if (ret == FOLLOW_DISTANCEOUTOFRANGE) {
 				m_Mode = MODE_OUTOFRANGE;
 				m_pathFollowerObj.stopFollow();
-			}
-
-			if(m_pathFollowerObj.isGoal()) 
-			{
+			} else if(m_pathFollowerObj.isGoal()) {
 				m_pathFollowerObj.stopFollow();
 				m_Mode = MODE_GOALED;
-			}
+            } else {
+              m_Mode = MODE_NORMAL;
+            }
 
 
 			m_pathFollowerObj.getTargetVelocity(m_velocity.data);
