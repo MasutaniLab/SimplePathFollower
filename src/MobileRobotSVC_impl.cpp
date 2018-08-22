@@ -92,6 +92,12 @@ RTC::RETURN_VALUE RTC_PathFollowerSVC_impl::followPathNonBlock(const RTC::Path2D
 	} else {
 		m_pRTC->setPath(path);
 		m_pRTC->startFollow();
+                SIMPLE_PATH_FOLLOWER_MODE mode = m_pRTC->getMode();
+                while (mode == MODE_GOALED) {
+                  std::cout << "[RTC::SimplePathFollower] waiting ..." << std::endl;
+                  coil::usleep(100 * 1000); //0.1•b
+                  mode = m_pRTC->getMode();
+                }
 		std::cout << "[RTC::SimplePathFollower] Start Following" << std::endl;
 	}
 
