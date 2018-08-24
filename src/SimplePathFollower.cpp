@@ -220,11 +220,12 @@ RTC::ReturnCode_t SimplePathFollower::onExecute(RTC::UniqueId ec_id)
 				m_Mode = MODE_OUTOFRANGE;
 				m_pathFollowerObj.stopFollow();
 			} else if(m_pathFollowerObj.isGoal()) {
+                          std::cout << "[RTC::SimplePathFollower] isGoal()" << std::endl;
 				m_pathFollowerObj.stopFollow();
-				m_Mode = MODE_GOALED;
-            } else {
-              m_Mode = MODE_NORMAL;
-            }
+                                m_Mode = MODE_GOALED;
+                        } else {
+                          m_Mode = MODE_NORMAL;
+                        }
 
 
 			m_pathFollowerObj.getTargetVelocity(m_velocity.data);

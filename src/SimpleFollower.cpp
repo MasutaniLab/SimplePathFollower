@@ -338,6 +338,7 @@ FOLLOW_RESULT SimpleFollower::approachGoal(RTC::Pose2D& currentPose, RTC::Waypoi
 		if(fabs(deltaPose) < goal.headingTolerance) {
 			rotVelocity = 0;
 			m_goal = true;
+                        std::cout << "[SimpleFollower] m_goal = true" << std::endl;
 #ifdef DEBUG
 			fout.close();
 #endif
