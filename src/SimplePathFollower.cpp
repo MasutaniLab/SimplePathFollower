@@ -97,6 +97,7 @@ SimplePathFollower::~SimplePathFollower()
 
 RTC::ReturnCode_t SimplePathFollower::onInitialize()
 {
+  RTC_INFO(("onInitialize()"))
   // Registration: InPort/OutPort/Service
   // <rtc-template block="registration">
   // Set InPort buffers
@@ -112,7 +113,7 @@ RTC::ReturnCode_t SimplePathFollower::onInitialize()
   
   // Set CORBA Service Ports
   addPort(m_PathFollowerPort);
-	m_pathFollower.setRTC(this);
+  m_pathFollower.setRTC(this);
   
   // </rtc-template>
 
@@ -159,6 +160,7 @@ RTC::ReturnCode_t SimplePathFollower::onShutdown(RTC::UniqueId ec_id)
 
 RTC::ReturnCode_t SimplePathFollower::onActivated(RTC::UniqueId ec_id)
 {
+  RTC_INFO(("onActivated()"))
 	m_poseUpdated = false;
 	m_Mode = MODE_NORMAL;
 	m_pathFollowerObj.stopFollow();
@@ -169,7 +171,8 @@ RTC::ReturnCode_t SimplePathFollower::onActivated(RTC::UniqueId ec_id)
 
 RTC::ReturnCode_t SimplePathFollower::onDeactivated(RTC::UniqueId ec_id)
 {
-  return RTC::RTC_OK;
+  RTC_INFO(("onDeactivated()"))
+    return RTC::RTC_OK;
 }
 
 
