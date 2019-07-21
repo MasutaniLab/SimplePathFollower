@@ -76,6 +76,7 @@ RTC::RETURN_VALUE RTC_PathFollowerSVC_impl::getState(RTC::FOLLOWER_STATE& state)
     state = RTC::FOLLOWER_ERROR;
     result = RTC::RETVAL_OUTOF_RANGE;
   } else if (mode == MODE_GOALED) {
+	std::cout << "[RTC_PathFollowerSVC_impl::getState()] mode == MODE_GOALED" << std::endl;
     state = RTC::FOLLOWER_STOPPED;
     result = RETVAL_OK;
   }

@@ -217,7 +217,10 @@ void SimpleFollower::updateReferenceLine() {
 		<< stopPoint.target.heading << ", " 
 		<< pose.position.x << ", "
 		<< pose.position.y << ", "
-		<< pose.heading << std::endl;
+		<< pose.heading  << ","
+		<< m_targetVelocity.vx << ","
+		<< m_targetVelocity.va << "," <<
+std::endl;
 
 #endif
 }
@@ -251,7 +254,7 @@ FOLLOW_RESULT SimpleFollower::follow()
 	}
 
 	double distanceFromPath = getDistanceFromPath(startPoint, stopPoint, m_currentPose);
-	if(fabs(distanceFromPath) > stopPoint.distanceTolerance) { // Out of Range
+	if(fabs(distanceFromPath) > stopPoint.distanceTolerance*2) { // Out of Range
 #ifdef DEBUG
 		std::cout << "[SimpleFollower] Distance Out Of Range (now=" << fabs(distanceFromPath) << " range=" << stopPoint.distanceTolerance << ")" << std::endl;
 #endif
