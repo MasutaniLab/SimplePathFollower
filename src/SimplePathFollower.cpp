@@ -160,12 +160,13 @@ RTC::ReturnCode_t SimplePathFollower::onShutdown(RTC::UniqueId ec_id)
 
 RTC::ReturnCode_t SimplePathFollower::onActivated(RTC::UniqueId ec_id)
 {
-  RTC_INFO(("onActivated()"))
+    RTC_INFO(("onActivated()"))
 	m_poseUpdated = false;
 	m_Mode = MODE_NORMAL;
 	m_pathFollowerObj.stopFollow();
 	m_lastReceivedTime = coil::gettimeofday();
-  return RTC::RTC_OK;
+    m_outputRequired = true;
+    return RTC::RTC_OK;
 }
 
 
@@ -243,7 +244,9 @@ RTC::ReturnCode_t SimplePathFollower::onExecute(RTC::UniqueId ec_id)
 				}
 			}
 			setTimestamp(m_velocity);
-			m_velocityOut.write();
+            if (m_outputRequired) {
+                m_velocityOut.write();
+            }
 			m_poseUpdated = false;
 		}
 	}

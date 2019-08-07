@@ -88,10 +88,14 @@ RTC::RETURN_VALUE RTC_PathFollowerSVC_impl::followPathNonBlock(const RTC::Path2D
 {
 	RTC::RETURN_VALUE result = RETVAL_OK;
 
-	if(path.waypoints.length() == 0){ 
-		m_pRTC->stopFollow();
+    if (path.waypoints.length() == 1) {
+        m_pRTC->disableOutput();
+    } else if (path.waypoints.length() == 0) {
+        m_pRTC->enableOutput();
+        m_pRTC->stopFollow();
 	} else {
-		m_pRTC->setPath(path);
+        m_pRTC->enableOutput();
+        m_pRTC->setPath(path);
 		m_pRTC->startFollow();
                 SIMPLE_PATH_FOLLOWER_MODE mode = m_pRTC->getMode();
                 while (mode == MODE_GOALED) {

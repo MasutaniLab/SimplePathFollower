@@ -374,6 +374,7 @@ class SimplePathFollower
   bool m_poseUpdated;
   SimpleFollower m_pathFollowerObj;
   RTC::Path2D m_path;
+  bool m_outputRequired;
 
 public:
 
@@ -387,6 +388,16 @@ public:
 
   void setPath(const RTC::Path2D& path) {
     this->m_path = path;
+  }
+
+  void enableOutput()
+  {
+      m_outputRequired = true;
+  }
+
+  void disableOutput()
+  {
+      m_outputRequired = false;
   }
 
   coil::TimeValue m_lastReceivedTime;
