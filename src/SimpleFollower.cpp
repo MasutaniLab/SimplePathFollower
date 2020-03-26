@@ -283,16 +283,25 @@ FOLLOW_RESULT SimpleFollower::follow()
         m_targetVelocity.va = -maxRotationVelocity;
       }
 
-      // 角度誤差が許容差以上だったら
+      // 角度誤差が許容値より大きければ
       if (fabs(angularDistanceFromPath) > stopPoint.headingTolerance) {
 #ifdef DEBUG
         std::cout << "[SimpleFollower] Heading Out Of Range (now=" << fabs(angularDistanceFromPath) << " range=" << stopPoint.headingTolerance << ")" << std::endl;
 #endif
-        if (fabs(m_targetVelocity.va) < m_MinRotationVelocity) {
-          if (m_targetVelocity.va < 0) m_targetVelocity.va = -m_MinRotationVelocity;
-          else if (m_targetVelocity.va > 0) m_targetVelocity.va = m_MinRotationVelocity;
+        m_targetVelocity.va = -(m_directionToRotationGain * angularDistanceFromPath);
+        if (m_targetVelocity.va > maxRotationVelocity) {
+          m_targetVelocity.va = maxRotationVelocity;
+        } else if (m_targetVelocity.va < -maxRotationVelocity) {
+          m_targetVelocity.va = -maxRotationVelocity;
         }
-        //throw HeadingOutOfRangeException();
+
+        if (fabs(m_targetVelocity.va) < m_MinRotationVelocity) {
+          if (m_targetVelocity.va < 0) {
+            m_targetVelocity.va = -m_MinRotationVelocity;
+          } else if (m_targetVelocity.va > 0) {
+            m_targetVelocity.va = m_MinRotationVelocity;
+          }
+        }
         ret = FOLLOW_HEADINGOUTOFRANGE;
 
       } else {
