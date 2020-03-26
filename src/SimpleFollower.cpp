@@ -59,13 +59,14 @@ SimpleFollower::~SimpleFollower()
 }
 
 #ifdef DEBUG
-static std::ofstream fout;
+static std::ofstream fout, fout2;
 coil::TimeValue startTime;
 #endif
 
 void SimpleFollower::startFollow(Path2D& path)
 { 
-#if 0
+#ifdef DEBUG
+  fout2.open("path.txt");
   size_t n = path.waypoints.length();
   for (size_t i = 0; i < n; i++) {
     std::cout << i << ": ";
@@ -73,7 +74,13 @@ void SimpleFollower::startFollow(Path2D& path)
     std::cout << path.waypoints[i].target.position.y << ",";
     std::cout << path.waypoints[i].target.heading << ",";
     std::cout << path.waypoints[i].distanceTolerance << std::endl;
+    fout2 << i << " "
+      << path.waypoints[i].target.position.x << " "
+      << path.waypoints[i].target.position.y << " "
+      << path.waypoints[i].target.heading << " "
+      << path.waypoints[i].distanceTolerance << std::endl;
   }
+  fout2.close();
 #endif
 	m_goal = false;
 	m_approaching = false;
@@ -204,23 +211,22 @@ void SimpleFollower::updateReferenceLine() {
 		m_StartPointIndex = startIndex;
 	}
 
-#ifdef DEBUG
+#if 0
 	RTC::Waypoint2D nearestPoint = path.waypoints[index];
 	RTC::Waypoint2D startPoint = path.waypoints[startIndex];
 	RTC::Waypoint2D stopPoint = path.waypoints[stopIndex];
-    double elapsedTime = coil::gettimeofday() - startTime;
-    fout << elapsedTime << " "
-         << nearestPoint.target.position.x << " "
-		<< nearestPoint.target.position.y << " "
-		<< nearestPoint.target.heading << " " 
-		<< startPoint.target.position.x << " "
-		<< startPoint.target.position.y << " "
-		<< startPoint.target.heading << " " 
-		<< stopPoint.target.position.x << " "
-		<< stopPoint.target.position.y << " "
-		<< stopPoint.target.heading << " " 
-		<< pose.position.x << " "
-		<< pose.position.y << " "
+
+	fout << nearestPoint.target.position.x << ", "
+		<< nearestPoint.target.position.y << ", "
+		<< nearestPoint.target.heading << ", " 
+		<< startPoint.target.position.x << ", "
+		<< startPoint.target.position.y << ", "
+		<< startPoint.target.heading << ", " 
+		<< stopPoint.target.position.x << ", "
+		<< stopPoint.target.position.y << ", "
+		<< stopPoint.target.heading << ", " 
+		<< pose.position.x << ", "
+		<< pose.position.y << ", "
 		<< pose.heading << std::endl;
 
 #endif
@@ -306,6 +312,13 @@ FOLLOW_RESULT SimpleFollower::follow()
 	std::cout << "[SimpleFollower] Distance = [" << distanceFromPath << ", " << angularDistanceFromPath << "]" << std::endl;
 	std::cout << "[SimpleFollower] TargetVelocity = ["
 		<< m_targetVelocity.vx << ", " << m_targetVelocity.va << "]" << std::endl;
+
+    double elapsedTime = coil::gettimeofday() - startTime;
+    fout << elapsedTime << " N "
+      << startIndex << " " << stopIndex << " "
+      << m_currentPose.position.x << " " << m_currentPose.position.y << " " << m_currentPose.heading << " "
+      << distanceFromPath << " " << angularDistanceFromPath << " "
+      << m_targetVelocity.vx << " " << m_targetVelocity.va << std::endl;
 #endif
 
 	return FOLLOW_OK;
@@ -410,6 +423,12 @@ FOLLOW_RESULT SimpleFollower::approachGoal(RTC::Pose2D& currentPose, RTC::Waypoi
 
 #ifdef DEBUG_GOAL
 	std::cout << "[SimpleFollower] Vel  = " << m_targetVelocity.vx << ", " << m_targetVelocity.vy << ", " << m_targetVelocity.va << std::endl;
+    double elapsedTime = coil::gettimeofday() - startTime;
+    fout << elapsedTime << " G "
+      << index-1 << " " << index << " "
+      << m_currentPose.position.x << " " << m_currentPose.position.y << " " << m_currentPose.heading << " "
+      << 0 << " " << 0 << " "
+      << m_targetVelocity.vx << " " << m_targetVelocity.va << std::endl;
 #endif
 	return ret;
 }
