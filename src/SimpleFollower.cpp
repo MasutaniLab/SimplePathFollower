@@ -19,6 +19,7 @@ using namespace RTC;
 #ifdef DEBUG
 #include <iostream>
 #include <fstream>
+#include <coil/Time.h>
 #endif
 
 SimpleFollower::SimpleFollower(float maxTranslationVelocity,
@@ -59,6 +60,7 @@ SimpleFollower::~SimpleFollower()
 
 #ifdef DEBUG
 static std::ofstream fout;
+coil::TimeValue startTime;
 #endif
 
 void SimpleFollower::startFollow(Path2D& path)
@@ -79,7 +81,8 @@ void SimpleFollower::startFollow(Path2D& path)
 	m_following = true;
 	m_StartPointIndex = 0;
 #ifdef DEBUG
-	fout.open("log.csv");
+    startTime = coil::gettimeofday();
+	fout.open("log.txt");
 #endif
 }
 
@@ -205,18 +208,19 @@ void SimpleFollower::updateReferenceLine() {
 	RTC::Waypoint2D nearestPoint = path.waypoints[index];
 	RTC::Waypoint2D startPoint = path.waypoints[startIndex];
 	RTC::Waypoint2D stopPoint = path.waypoints[stopIndex];
-
-	fout << nearestPoint.target.position.x << ", "
-		<< nearestPoint.target.position.y << ", "
-		<< nearestPoint.target.heading << ", " 
-		<< startPoint.target.position.x << ", "
-		<< startPoint.target.position.y << ", "
-		<< startPoint.target.heading << ", " 
-		<< stopPoint.target.position.x << ", "
-		<< stopPoint.target.position.y << ", "
-		<< stopPoint.target.heading << ", " 
-		<< pose.position.x << ", "
-		<< pose.position.y << ", "
+    double elapsedTime = coil::gettimeofday() - startTime;
+    fout << elapsedTime << " "
+         << nearestPoint.target.position.x << " "
+		<< nearestPoint.target.position.y << " "
+		<< nearestPoint.target.heading << " " 
+		<< startPoint.target.position.x << " "
+		<< startPoint.target.position.y << " "
+		<< startPoint.target.heading << " " 
+		<< stopPoint.target.position.x << " "
+		<< stopPoint.target.position.y << " "
+		<< stopPoint.target.heading << " " 
+		<< pose.position.x << " "
+		<< pose.position.y << " "
 		<< pose.heading << std::endl;
 
 #endif
