@@ -236,71 +236,76 @@ void SimpleFollower::updateReferenceLine() {
 
 FOLLOW_RESULT SimpleFollower::follow()
 {
-	if(!isFollowing()) {
-		m_targetVelocity.vx = m_targetVelocity.vy = m_targetVelocity.va = 0;
-		return FOLLOW_NOT_IN_FOLLOW;
-	}
+  if (!isFollowing()) {
+    m_targetVelocity.vx = m_targetVelocity.vy = m_targetVelocity.va = 0;
+    return FOLLOW_NOT_IN_FOLLOW;
+  }
 
-	updateReferenceLine();
-	int startIndex = getStartPointIndex();
-	int stopIndex  = getStopPointIndex();
-	RTC::Waypoint2D startPoint = m_targetPath.waypoints[startIndex];
-	RTC::Waypoint2D stopPoint = m_targetPath.waypoints[stopIndex];
+  updateReferenceLine();
+  int startIndex = getStartPointIndex();
+  int stopIndex = getStopPointIndex();
+  RTC::Waypoint2D startPoint = m_targetPath.waypoints[startIndex];
+  RTC::Waypoint2D stopPoint = m_targetPath.waypoints[stopIndex];
 
 
-	double maxTranslationVelocity = stopPoint.maxSpeed.vx;
-	double maxRotationVelocity = stopPoint.maxSpeed.va;
+  double maxTranslationVelocity = stopPoint.maxSpeed.vx;
+  double maxRotationVelocity = stopPoint.maxSpeed.va;
 
-	int nearestIndex = getNearestIndex(m_currentPose, m_targetPath);
-	if (nearestIndex == (m_targetPath.waypoints.length() -1 ) || m_approaching) {
+  FOLLOW_RESULT ret;
+  double distanceFromPath = 0;
+  double angularDistanceFromPath = 0;
+
+  int nearestIndex = getNearestIndex(m_currentPose, m_targetPath);
+
+  if (nearestIndex == (m_targetPath.waypoints.length() - 1) || m_approaching) {
 #ifdef DEBUG
-		std::cout << "[SimpleFollower] Approaching Goal." << std::endl;
+    std::cout << "[SimpleFollower] Approaching Goal." << std::endl;
 #endif
-		m_approaching = true;
-		return approachGoal(m_currentPose, m_targetPath.waypoints[m_targetPath.waypoints.length()-1]);
-	}
+    m_approaching = true;
+    ret = approachGoal(m_currentPose, m_targetPath.waypoints[m_targetPath.waypoints.length() - 1]);
 
-	double distanceFromPath = getDistanceFromPath(startPoint, stopPoint, m_currentPose);
-	if(fabs(distanceFromPath) > stopPoint.distanceTolerance) { // Out of Range
+  } else {
+
+    distanceFromPath = getDistanceFromPath(startPoint, stopPoint, m_currentPose);
+    if (fabs(distanceFromPath) > stopPoint.distanceTolerance) { // Out of Range
 #ifdef DEBUG
-		std::cout << "[SimpleFollower] Distance Out Of Range (now=" << fabs(distanceFromPath) << " range=" << stopPoint.distanceTolerance << ")" << std::endl;
+      std::cout << "[SimpleFollower] Distance Out Of Range (now=" << fabs(distanceFromPath) << " range=" << stopPoint.distanceTolerance << ")" << std::endl;
 #endif
-		//throw OutOfRangeException();
-		return FOLLOW_DISTANCEOUTOFRANGE;
-	}
+      ret = FOLLOW_DISTANCEOUTOFRANGE;
+    } else {
 
-	double angularDistanceFromPath = getAngularDistanceFromPath(startPoint, stopPoint, m_currentPose);
+      angularDistanceFromPath = getAngularDistanceFromPath(startPoint, stopPoint, m_currentPose);
+      m_targetVelocity.vx = 0;
+      m_targetVelocity.va = -(m_distanceToRotationGain * distanceFromPath + m_directionToRotationGain * angularDistanceFromPath);
+      if (m_targetVelocity.va > maxRotationVelocity) {
+        m_targetVelocity.va = maxRotationVelocity;
+      } else if (m_targetVelocity.va < -maxRotationVelocity) {
+        m_targetVelocity.va = -maxRotationVelocity;
+      }
 
-	//  distanceFromPath = 0.1;
-	m_targetVelocity.vx = 0;
-
-	m_targetVelocity.va = -(m_distanceToRotationGain * distanceFromPath + m_directionToRotationGain * angularDistanceFromPath);
-	if(m_targetVelocity.va > maxRotationVelocity) {
-		m_targetVelocity.va = maxRotationVelocity;
-	} else if(m_targetVelocity.va < -maxRotationVelocity) {
-		m_targetVelocity.va = -maxRotationVelocity;
-	}  
-
-	// 角度誤差が許容差以上だったら，旋回速度計算が終了時点で例外を出す．並進速度はゼロ
-	if(fabs(angularDistanceFromPath) > stopPoint.headingTolerance) {
+      // 角度誤差が許容差以上だったら
+      if (fabs(angularDistanceFromPath) > stopPoint.headingTolerance) {
 #ifdef DEBUG
-		std::cout << "[SimpleFollower] Heading Out Of Range (now=" << fabs(angularDistanceFromPath) << " range=" << stopPoint.headingTolerance << ")" << std::endl;
+        std::cout << "[SimpleFollower] Heading Out Of Range (now=" << fabs(angularDistanceFromPath) << " range=" << stopPoint.headingTolerance << ")" << std::endl;
 #endif
-		if (fabs(m_targetVelocity.va) < m_MinRotationVelocity) {
-			if (m_targetVelocity.va < 0) m_targetVelocity.va = -m_MinRotationVelocity;
-			else if(m_targetVelocity.va > 0) m_targetVelocity.va = m_MinRotationVelocity;
-		}
-		//throw HeadingOutOfRangeException();
-		return FOLLOW_HEADINGOUTOFRANGE;
-	}
+        if (fabs(m_targetVelocity.va) < m_MinRotationVelocity) {
+          if (m_targetVelocity.va < 0) m_targetVelocity.va = -m_MinRotationVelocity;
+          else if (m_targetVelocity.va > 0) m_targetVelocity.va = m_MinRotationVelocity;
+        }
+        //throw HeadingOutOfRangeException();
+        ret = FOLLOW_HEADINGOUTOFRANGE;
 
+      } else {
+        m_targetVelocity.vx = m_MaxTranslationVelocity - m_distanceToTranslationGain * fabs(distanceFromPath)
+          - m_directionToTranslationGain * fabs(angularDistanceFromPath);
 
-
-	m_targetVelocity.vx = m_MaxTranslationVelocity - m_distanceToTranslationGain * fabs(distanceFromPath)
-		- m_directionToTranslationGain * fabs(angularDistanceFromPath);
-	if(m_targetVelocity.vx < m_MinTranslationVelocity) {
-		m_targetVelocity.vx = m_MinTranslationVelocity;
-	}
+        if (m_targetVelocity.vx < m_MinTranslationVelocity) {
+          m_targetVelocity.vx = m_MinTranslationVelocity;
+        }
+        ret = FOLLOW_OK;
+      }
+    }
+  }
 
 #ifdef DEBUG
 	std::cout << "[SimpleFollower] Target Point Index = [" << startIndex << ", " << stopIndex << "]" << std::endl;
@@ -314,14 +319,15 @@ FOLLOW_RESULT SimpleFollower::follow()
 		<< m_targetVelocity.vx << ", " << m_targetVelocity.va << "]" << std::endl;
 
     double elapsedTime = coil::gettimeofday() - startTime;
-    fout << elapsedTime << " N "
+    fout << elapsedTime << " "
+      << int(ret) << " "
       << startIndex << " " << stopIndex << " "
       << m_currentPose.position.x << " " << m_currentPose.position.y << " " << m_currentPose.heading << " "
       << distanceFromPath << " " << angularDistanceFromPath << " "
       << m_targetVelocity.vx << " " << m_targetVelocity.va << std::endl;
 #endif
 
-	return FOLLOW_OK;
+	return ret;
 }
 
 
@@ -423,12 +429,6 @@ FOLLOW_RESULT SimpleFollower::approachGoal(RTC::Pose2D& currentPose, RTC::Waypoi
 
 #ifdef DEBUG_GOAL
 	std::cout << "[SimpleFollower] Vel  = " << m_targetVelocity.vx << ", " << m_targetVelocity.vy << ", " << m_targetVelocity.va << std::endl;
-    double elapsedTime = coil::gettimeofday() - startTime;
-    fout << elapsedTime << " G "
-      << index-1 << " " << index << " "
-      << m_currentPose.position.x << " " << m_currentPose.position.y << " " << m_currentPose.heading << " "
-      << 0 << " " << 0 << " "
-      << m_targetVelocity.vx << " " << m_targetVelocity.va << std::endl;
 #endif
 	return ret;
 }
