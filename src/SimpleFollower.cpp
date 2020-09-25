@@ -236,13 +236,14 @@ FOLLOW_RESULT SimpleFollower::follow()
 	int stopIndex  = getStopPointIndex();
 	RTC::Waypoint2D startPoint = m_targetPath.waypoints[startIndex];
 	RTC::Waypoint2D stopPoint = m_targetPath.waypoints[stopIndex];
+	double startDistance = getDistance(startPoint.target, m_currentPose);
+	double stopDistance = getDistance(stopPoint.target, m_currentPose);
 
 
 	double maxTranslationVelocity = stopPoint.maxSpeed.vx;
 	double maxRotationVelocity = stopPoint.maxSpeed.va;
 
-	int nearestIndex = getNearestIndex(m_currentPose, m_targetPath);
-	if (nearestIndex == (m_targetPath.waypoints.length() -1 ) || m_approaching) {
+	if ((stopIndex == (m_targetPath.waypoints.length() -1 ) && stopDistance < startDistance) || m_approaching) {
 #ifdef DEBUG
 		std::cout << "[SimpleFollower] Approaching Goal." << std::endl;
 #endif
