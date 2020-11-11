@@ -63,15 +63,17 @@ static std::ofstream fout;
 
 void SimpleFollower::startFollow(Path2D& path)
 { 
-#if 0
+#if 1
+  std::ofstream pout("path.csv");
   size_t n = path.waypoints.length();
   for (size_t i = 0; i < n; i++) {
-    std::cout << i << ": ";
-    std::cout << path.waypoints[i].target.position.x << ",";
-    std::cout << path.waypoints[i].target.position.y << ",";
-    std::cout << path.waypoints[i].target.heading << ",";
-    std::cout << path.waypoints[i].distanceTolerance << std::endl;
-  }
+    pout << i << ",";
+    pout << path.waypoints[i].target.position.x << ",";
+    pout << path.waypoints[i].target.position.y << ",";
+    pout << path.waypoints[i].target.heading << ",";
+    pout << path.waypoints[i].distanceTolerance << std::endl;
+}
+  pout.close();
 #endif
 	m_goal = false;
 	m_approaching = false;
@@ -272,16 +274,20 @@ FOLLOW_RESULT SimpleFollower::follow()
 		m_targetVelocity.va = -maxRotationVelocity;
 	}  
 
-	// 角度誤差が許容差以上だったら，旋回速度計算が終了時点で例外を出す．並進速度はゼロ
 	if(fabs(angularDistanceFromPath) > stopPoint.headingTolerance) {
 #ifdef DEBUG
-		std::cout << "[SimpleFollower] Heading Out Of Range (now=" << fabs(angularDistanceFromPath) << " range=" << stopPoint.headingTolerance << ")" << std::endl;
+		std::cout << "[SimpleFollower] Heading Out Of Range (now=" << angularDistanceFromPath << " range=" << stopPoint.headingTolerance << ")" << std::endl;
 #endif
+		m_targetVelocity.va = -(m_directionToRotationGain * angularDistanceFromPath);
+		if (m_targetVelocity.va > maxRotationVelocity) {
+		  m_targetVelocity.va = maxRotationVelocity;
+		} else if (m_targetVelocity.va < -maxRotationVelocity) {
+		  m_targetVelocity.va = -maxRotationVelocity;
+		}
 		if (fabs(m_targetVelocity.va) < m_MinRotationVelocity) {
 			if (m_targetVelocity.va < 0) m_targetVelocity.va = -m_MinRotationVelocity;
 			else if(m_targetVelocity.va > 0) m_targetVelocity.va = m_MinRotationVelocity;
 		}
-		//throw HeadingOutOfRangeException();
 		return FOLLOW_HEADINGOUTOFRANGE;
 	}
 
